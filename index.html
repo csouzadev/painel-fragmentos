@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<!-- viewport-fit=cover: deixa a página ocupar a tela toda do iPhone (inclusive atrás do entalhe) -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050817">
+<title>Evolução Física — Fragmentos_</title>
+<style>
+:root{
+  --bg:#050817;--panel:rgba(8,14,34,.78);--blue:#2ba7ff;--cyan:#00e7ff;--purple:#9b4dff;
+  --pink:#d75cff;--white:#f5f7ff;--muted:#98a8ca;--good:#2df0a3;--gold:#ffd66b;--danger:#ff5d80
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%;background:#050817}
+body{
+  margin:0;
+  min-height:100vh;
+  min-height:100dvh; /* dvh = altura real visível no iPhone */
+  font-family:-apple-system,BlinkMacSystemFont,Inter,"Segoe UI",Roboto,Arial,sans-serif;
+  color:var(--white);
+  background:
+    radial-gradient(circle at 15% 10%,rgba(48,94,255,.22),transparent 23%),
+    radial-gradient(circle at 85% 12%,rgba(132,50,255,.20),transparent 25%),
+    radial-gradient(circle at 50% 100%,rgba(0,191,255,.14),transparent 36%),
+    linear-gradient(180deg,#050817 0%,#071022 50%,#040713 100%);
+  background-color:#050817;
+  overflow-x:hidden
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-2;
+  background-image:radial-gradient(circle,rgba(255,255,255,.8) 0 1px,transparent 1.5px),radial-gradient(circle,rgba(89,184,255,.7) 0 1px,transparent 1.5px);
+  background-size:92px 92px,151px 151px;background-position:12px 24px,44px 70px;opacity:.26
+}
+.shell{
+  width:min(1180px,calc(100% - 28px));
+  margin:0 auto;
+  /* env(safe-area-inset-*) = espaço de segurança do iPhone (entalhe e barra inferior) */
+  padding:calc(34px + env(safe-area-inset-top)) 0 calc(60px + env(safe-area-inset-bottom))
+}
+.topline{display:flex;gap:14px;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
+.eyebrow{font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:#81bfff;margin-bottom:7px}
+h1{margin:0;font-size:clamp(32px,5vw,58px);line-height:1.05;letter-spacing:-.04em;text-shadow:0 0 24px rgba(87,128,255,.22)}
+h1 span{background:linear-gradient(90deg,var(--blue),#cf5cff);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.subtitle{margin:10px 0 0;color:#b8c5e1;font-size:clamp(15px,2vw,19px)}
+.brand-tag{padding:10px 13px;border:1px solid #335ea3;border-radius:14px;background:rgba(6,14,36,.75);box-shadow:inset 0 0 20px rgba(48,112,255,.08),0 0 20px rgba(68,84,255,.11);font-size:13px;color:#b8d7ff;white-space:nowrap}
+.hero{position:relative;border:1px solid rgba(69,145,255,.8);border-radius:26px;background:linear-gradient(135deg,rgba(10,22,53,.93),rgba(13,11,40,.9));box-shadow:0 0 0 1px rgba(117,79,255,.2) inset,0 0 32px rgba(51,107,255,.15);padding:24px;overflow:hidden}
+.hero:after{content:"";position:absolute;width:320px;height:320px;right:-120px;top:-160px;border-radius:50%;background:radial-gradient(circle,rgba(149,71,255,.26),transparent 68%);pointer-events:none}
+.rule{display:flex;align-items:center;gap:18px;position:relative;z-index:1}
+.target{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;border:2px solid #71d4ff;box-shadow:0 0 28px rgba(77,136,255,.35),inset 0 0 25px rgba(125,61,255,.26);font-size:34px}
+.rule strong{display:block;font-size:clamp(24px,4vw,42px);line-height:1.06}
+.rule small{display:block;color:#8fa7d0;letter-spacing:.2em;text-transform:uppercase;margin-bottom:7px}
+.rule em{font-style:normal;background:linear-gradient(90deg,#74d7ff,#c55cff);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px;position:relative;z-index:1}
+.stat{background:rgba(4,10,26,.65);border:1px solid #244e8f;border-radius:18px;padding:16px 18px;min-height:102px;box-shadow:inset 0 0 24px rgba(43,167,255,.04)}
+.stat .k{font-size:11px;color:#7da5da;text-transform:uppercase;letter-spacing:.17em}
+.stat .v{font-size:34px;font-weight:800;margin-top:5px}
+.stat .v.neon{color:#78ddff;text-shadow:0 0 17px rgba(0,208,255,.3)}
+.stat .small{color:#9baaca;font-size:13px;margin-top:4px}
+.progress-wrap{margin-top:18px;position:relative;z-index:1}
+.progress-head{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:#aab9d8;margin-bottom:8px}
+.bar{height:13px;background:#080d1e;border:1px solid #1e3b69;border-radius:999px;overflow:hidden;box-shadow:inset 0 0 12px rgba(0,0,0,.6)}
+.fill{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--cyan),var(--purple));box-shadow:0 0 18px rgba(47,158,255,.7);transition:width .45s ease}
+.section{margin-top:24px;border:1px solid rgba(56,114,201,.7);border-radius:24px;background:rgba(6,12,29,.73);padding:22px;box-shadow:0 0 28px rgba(20,78,180,.09)}
+.section-title{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:16px}
+.section-title h2{margin:0;font-size:22px}
+.section-title p{margin:4px 0 0;color:#93a8ca;font-size:14px}
+.mini-note{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#6ba7e5;text-align:right}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+.day{
+  -webkit-appearance:none;appearance:none;
+  touch-action:manipulation; /* evita atraso e zoom por toque duplo no iPhone */
+  font-family:inherit;
+  border:1px solid #254f91;background:linear-gradient(180deg,#09152d,#091022);color:#dae8ff;
+  border-radius:16px;min-height:92px;padding:12px 8px;cursor:pointer;position:relative;overflow:hidden;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,filter .18s ease
+}
+.day:hover{transform:translateY(-2px);border-color:#4caaff;box-shadow:0 0 18px rgba(45,138,255,.18)}
+.day:focus-visible{outline:2px solid #b364ff;outline-offset:3px}
+.day .num{font-size:26px;font-weight:800}
+.day .label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#7c94bd;margin-top:2px}
+.day .dot{width:9px;height:9px;border-radius:50%;background:#29436c;margin:10px auto 0;box-shadow:0 0 0 3px rgba(42,80,130,.14)}
+.day.done{border-color:#14d9ff;background:linear-gradient(180deg,rgba(0,107,173,.36),rgba(54,23,111,.42));box-shadow:0 0 22px rgba(0,196,255,.18),inset 0 0 30px rgba(91,65,255,.14)}
+.day.done .num{color:#fff;text-shadow:0 0 14px rgba(51,211,255,.6)}
+.day.done .dot{background:var(--good);box-shadow:0 0 15px rgba(45,240,163,.72)}
+.day.locked{opacity:.42;cursor:not-allowed;filter:saturate(.6)}
+.day.milestone{border-color:#8d53ff}
+.day.milestone:before{content:"★";position:absolute;right:8px;top:6px;color:#c96dff;font-size:13px;text-shadow:0 0 10px #8d53ff}
+.milestones{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.milestone-card{position:relative;min-height:158px;border-radius:18px;border:1px solid #273c69;background:linear-gradient(145deg,#0a1023,#0b0e20);padding:16px;overflow:hidden}
+.milestone-card:after{content:"";position:absolute;width:100px;height:100px;right:-40px;top:-38px;border-radius:50%;background:radial-gradient(circle,rgba(107,83,255,.22),transparent 70%);pointer-events:none}
+.milestone-card.locked{opacity:.52;filter:grayscale(.25)}
+.milestone-card.unlocked{border-color:#7e5cff;box-shadow:0 0 22px rgba(116,74,255,.16),inset 0 0 24px rgba(41,145,255,.05)}
+.week{font-size:11px;letter-spacing:.16em;color:#7da8db;text-transform:uppercase}
+.milestone-card h3{margin:7px 0 5px;font-size:18px}
+.milestone-card p{margin:0;color:#879bc0;font-size:13px;line-height:1.45}
+.seal{margin-top:15px;display:inline-flex;align-items:center;gap:7px;border:1px solid #325995;background:#08142d;border-radius:999px;padding:6px 10px;font-size:12px;color:#bcd7ff}
+.unlocked .seal{border-color:#6f60ff;color:white;box-shadow:0 0 15px rgba(123,87,255,.22)}
+.bottom-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:14px;margin-top:24px}
+.history-list{display:flex;flex-direction:column;gap:8px;min-height:95px}
+.history-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #1e3966;border-radius:12px;background:#071027;color:#b8c8e6;font-size:13px}
+.history-item b{color:#fff}
+.empty{color:#7185aa;font-size:13px;padding:12px 0}
+.actions{display:flex;flex-direction:column;gap:10px}
+button.action{
+  -webkit-appearance:none;appearance:none;touch-action:manipulation;font-family:inherit;font-size:15px;
+  border:1px solid #2e5aa0;border-radius:13px;padding:12px 14px;background:#0b1832;color:white;font-weight:700;cursor:pointer;transition:.2s
+}
+button.action:hover{transform:translateY(-1px);box-shadow:0 0 18px rgba(47,120,255,.17)}
+button.action.danger{border-color:#6d2b4d;color:#ffb4c5;background:#22101b}
+.footer{text-align:center;color:#63769b;margin-top:25px;font-size:12px;letter-spacing:.08em}
+.toast{
+  position:fixed;right:18px;
+  bottom:calc(18px + env(safe-area-inset-bottom)); /* não fica escondido atrás da barra do iPhone */
+  max-width:calc(100% - 36px);
+  background:#0b1734;border:1px solid #386bb6;color:#e8f2ff;border-radius:13px;padding:12px 15px;
+  box-shadow:0 12px 32px rgba(0,0,0,.35),0 0 24px rgba(70,97,255,.2);
+  transform:translateY(20px);opacity:0;pointer-events:none;transition:.25s;z-index:30;font-size:13px
+}
+.toast.show{opacity:1;transform:translateY(0)}
+.modal{
+  position:fixed;inset:0;background:rgba(2,5,15,.78);
+  -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px); /* o prefixo -webkit- é necessário no Safari */
+  display:none;z-index:50;
+  overflow-y:auto;            /* permite rolar se a janela for maior que a tela */
+  -webkit-overflow-scrolling:touch;
+  padding:calc(22px + env(safe-area-inset-top)) 22px calc(22px + env(safe-area-inset-bottom))
+}
+.modal.show{display:flex}
+.celebration{
+  width:min(820px,100%);margin:auto; /* margin:auto centraliza sem cortar o topo */
+  border:1px solid #6f66ff;border-radius:28px;
+  background:linear-gradient(150deg,#09152f 0%,#15103a 52%,#071323 100%);
+  box-shadow:0 0 80px rgba(92,59,255,.3),inset 0 0 55px rgba(56,127,255,.08);
+  padding:30px;position:relative;overflow:hidden;text-align:center
+}
+.celebration.level2{border-color:#3be5ff;background:linear-gradient(145deg,#07172c,#10114c,#0a1d2d)}
+.celebration.level3{border-color:#ffca64;background:linear-gradient(145deg,#101228,#20103f,#17200c)}
+.celebration.level4{border-color:#ff67dd;background:linear-gradient(145deg,#0c132d,#28103c,#071f29)}
+.celebration:before{content:"";position:absolute;inset:-40%;pointer-events:none;background:conic-gradient(from 90deg,transparent,rgba(74,185,255,.16),transparent,rgba(180,72,255,.14),transparent);animation:spin 9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.celebration>*{position:relative;z-index:2}
+.celebration .big{font-size:clamp(44px,9vw,88px);line-height:1;margin:2px 0 12px}
+.celebration h2{font-size:clamp(28px,5vw,48px);margin:0}
+.celebration .sub{color:#b7c8e9;max-width:600px;margin:10px auto 20px;line-height:1.55}
+.team{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0}
+.member{padding:14px 8px;border-radius:16px;border:1px solid #2e4f85;background:rgba(6,12,28,.65)}
+.avatar{font-size:32px;display:block;margin-bottom:5px;filter:drop-shadow(0 0 10px rgba(120,170,255,.25))}
+.member b{font-size:13px}
+.close{
+  -webkit-appearance:none;appearance:none;touch-action:manipulation;font-family:inherit;font-size:15px;
+  border:0;border-radius:999px;padding:12px 18px;background:linear-gradient(90deg,#238cff,#9857ff);color:white;font-weight:800;cursor:pointer;box-shadow:0 0 22px rgba(84,89,255,.3)
+}
+.confetti{position:fixed;width:9px;height:14px;border-radius:2px;z-index:60;pointer-events:none;animation:fall 2.8s linear forwards}
+@keyframes fall{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(900deg);opacity:.2}}
+
+@media(max-width:860px){
+  .stats{grid-template-columns:1fr}
+  .days{grid-template-columns:repeat(4,1fr)}
+  .milestones{grid-template-columns:repeat(2,1fr)}
+  .bottom-grid{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .shell{width:calc(100% - 18px);padding-top:calc(22px + env(safe-area-inset-top))}
+  .topline{display:block}
+  .brand-tag{display:inline-block;margin-top:14px}
+  .eyebrow{letter-spacing:.2em}
+  .hero,.section{padding:16px;border-radius:20px}
+  .rule{align-items:flex-start}
+  .target{width:58px;height:58px;font-size:26px;flex:0 0 58px}
+  .days{grid-template-columns:repeat(3,1fr);gap:8px}
+  .day{min-height:80px}
+  .day .num{font-size:22px}
+  .milestones{grid-template-columns:1fr}
+  .team{grid-template-columns:repeat(2,1fr)}
+  .celebration{padding:22px 16px}
+  .mini-note{text-align:left}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="topline">
+    <div>
+      <div class="eyebrow">FOCO · DISCIPLINA · PROGRESSO · LIBERDADE</div>
+      <h1>Evolução Física — <span>Fragmentos_</span></h1>
+      <p class="subtitle">Um dia de cada vez. Cada ciclo concluído desbloqueia um novo nível.</p>
+    </div>
+    <div class="brand-tag">FRAGMENTOS_ // PHYSICAL PROTOCOL</div>
+  </div>
+
+  <section class="hero">
+    <div class="rule">
+      <div class="target">◎</div>
+      <div><small>Regra central</small><strong>Não vencer o mês. <em>Vencer o dia.</em></strong></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="k">Sequência atual</div><div class="v neon" id="streak">3</div><div class="small">dias consecutivos registrados</div></div>
+      <div class="stat"><div class="k">Dias concluídos</div><div class="v" id="completed">3</div><div class="small">atividade física registrada</div></div>
+      <div class="stat"><div class="k">Próxima conquista</div><div class="v" id="next">7</div><div class="small" id="nextText">faltam 4 dias</div></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-head"><span id="progressLabel">Progresso para 7 dias</span><strong id="progressPct">43%</strong></div>
+      <div class="bar"><div class="fill" id="fill" style="width:43%"></div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <div><h2>Dias de atividade</h2><p>Toque no próximo dia para registrar. O painel mantém a sequência em ordem.</p></div>
+      <div class="mini-note">Sem atalhos. Sem pular etapa.</div>
+    </div>
+    <!-- Os 84 botões de dias são criados pelo JavaScript (função renderDays) -->
+    <div class="days" id="days"><p style="grid-column:1/-1;color:#93a8ca;font-size:14px;line-height:1.5;margin:0">Carregando os dias... Se esta mensagem não sumir, o JavaScript não está rodando neste modo de abertura.</p></div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <div><h2>Conquistas Fragmentos_</h2><p>A cada 7 dias, a comemoração sobe de nível.</p></div>
+      <div class="mini-note">7 · 14 · 21 · 28 · ...</div>
+    </div>
+    <div class="milestones" id="milestones"></div>
+  </section>
+
+  <div class="bottom-grid">
+    <section class="section" style="margin-top:0">
+      <div class="section-title"><div><h2>Histórico de conquistas</h2><p>O que foi conquistado permanece registrado.</p></div></div>
+      <div class="history-list" id="history"><div class="empty">Primeira conquista em 7 dias. Você já começou a sequência.</div></div>
+    </section>
+    <section class="section" style="margin-top:0">
+      <div class="section-title"><div><h2>Controle</h2><p>Seu progresso fica salvo neste navegador.</p></div></div>
+      <div class="actions">
+        <button class="action" id="showLatest">Ver última conquista</button>
+        <button class="action danger" id="reset">Zerar painel</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="footer">FRAGMENTOS_ · CHRIS + LUNA + NEXUS + ARGUS · PROTOCOLO DE CONSISTÊNCIA</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="celebration" id="celebration">
+    <div class="big" id="partyIcon">🎉</div>
+    <div class="eyebrow" id="modalEyebrow">CONQUISTA DESBLOQUEADA</div>
+    <h2 id="modalTitle">7 dias vencidos!</h2>
+    <p class="sub" id="modalText"></p>
+    <div class="team">
+      <div class="member"><span class="avatar">👓</span><b>Chris</b></div>
+      <div class="member"><span class="avatar">💜</span><b>Luna</b></div>
+      <div class="member"><span class="avatar">🤖</span><b>Nexus</b></div>
+      <div class="member"><span class="avatar">🐺</span><b>Argus</b></div>
+    </div>
+    <button class="close" id="closeModal">Continuar missão</button>
+  </div>
+</div>
+
+<script>
+// Se algum erro de JavaScript acontecer, mostra o erro na própria tela (útil para testar no iPhone)
+window.addEventListener('error', function (e) {
+  var d = document.getElementById('days');
+  if (!d) return;
+  var p = document.createElement('p');
+  p.style.cssText = 'grid-column:1/-1;color:#ffb4c5;font-size:14px;line-height:1.5;margin:0';
+  p.textContent = 'Erro no JavaScript: ' + e.message + ' (linha ' + e.lineno + ')';
+  d.innerHTML = '';
+  d.appendChild(p);
+});
+</script>
+<script>
+(() => {
+  const TOTAL_DAYS = 84;
+  const KEY = 'fragmentos_physical_v1';
+  const defaultState = { completed: 3, seen: [] };
+  let state = load();
+
+  const milestonesData = {
+    7:  { title: 'Primeiro Ciclo',        text: 'Os 7 primeiros dias foram vencidos. A equipe Fragmentos_ abre a primeira comemoração: balões, confetes e o primeiro selo de consistência.', icon: '🎈', cls: '' },
+    14: { title: 'Ritmo Consolidado',     text: 'Duas semanas. A festa cresce: mais luzes, chuva de confetes e a equipe inteira celebrando uma rotina que já ganhou força.', icon: '🎊', cls: 'level2' },
+    21: { title: 'Modo Disciplina',       text: '21 dias. O painel entra em modo épico: troféu, holofotes e a Fragmentos_ comemorando uma sequência que já deixou de ser acaso.', icon: '🏆', cls: 'level3' },
+    28: { title: 'Ascensão Fragmentos_',  text: 'Quatro semanas completas. Agora é celebração de nível máximo: palco, luzes, balões, troféus e a equipe em clima de conquista grande.', icon: '🚀', cls: 'level4' }
+  };
+
+  // Lê o progresso salvo no navegador
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return { ...defaultState };
+      const obj = JSON.parse(raw);
+      return {
+        completed: Number.isFinite(obj.completed) ? obj.completed : 3,
+        seen: Array.isArray(obj.seen) ? obj.seen : []
+      };
+    } catch (e) {
+      return { ...defaultState };
+    }
+  }
+
+  // Salva o progresso. O try/catch evita erro no Safari em aba privada
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  const el = id => document.getElementById(id);
+  const days = el('days');
+  const milestones = el('milestones');
+  const history = el('history');
+
+  function milestoneInfo(day) {
+    if (milestonesData[day]) return milestonesData[day];
+    const lvl = day / 7;
+    return {
+      title: `Nível ${lvl} desbloqueado`,
+      text: `${day} dias de atividade concluídos. A celebração Fragmentos_ sobe novamente de nível — mais energia, mais luz e uma conquista maior para registrar.`,
+      icon: lvl % 4 === 0 ? '🚀' : lvl % 3 === 0 ? '🏆' : lvl % 2 === 0 ? '🎊' : '🎈',
+      cls: ['', 'level2', 'level3', 'level4'][(lvl - 1) % 4]
+    };
+  }
+
+  function renderDays() {
+    days.innerHTML = '';
+    for (let i = 1; i <= TOTAL_DAYS; i++) {
+      const b = document.createElement('button');
+      const isDone = i <= state.completed;
+      const isNext = i === state.completed + 1;
+      const canUndo = i === state.completed;
+
+      b.type = 'button';
+      b.className = 'day' + (isDone ? ' done' : '') + (i % 7 === 0 ? ' milestone' : '') + (!isDone && !isNext ? ' locked' : '');
+      b.setAttribute('aria-label', `Dia ${i} ${isDone ? 'concluído' : isNext ? 'disponível' : 'bloqueado'}`);
+      b.innerHTML = `<div class="num">${String(i).padStart(2, '0')}</div><div class="label">${isDone ? 'Concluído' : isNext ? 'Próximo' : 'Bloqueado'}</div><div class="dot"></div>`;
+
+      b.onclick = () => {
+        if (isNext) {
+          state.completed++;
+          save();
+          render();
+          toast(`Dia ${i} concluído. Sequência atual: ${state.completed}.`);
+          if (state.completed % 7 === 0) setTimeout(() => unlockMilestone(state.completed), 250);
+        } else if (canUndo) {
+          if (confirm(`Remover o Dia ${i} da sequência?`)) {
+            state.completed--;
+            state.seen = state.seen.filter(x => x <= state.completed);
+            save();
+            render();
+          }
+        } else if (!isDone) {
+          toast(`Complete o Dia ${state.completed + 1} primeiro.`);
+        }
+      };
+      days.appendChild(b);
+    }
+  }
+
+  function renderStats() {
+    const c = state.completed;
+    const target = Math.floor(c / 7) * 7 + 7; // próxima conquista (7, 14, 21...)
+    const start = target - 7;
+    const pct = Math.min(100, Math.round((c - start) / 7 * 100));
+    const faltam = target - c;
+
+    el('streak').textContent = c;
+    el('completed').textContent = c;
+    el('next').textContent = target;
+    el('nextText').textContent = `faltam ${faltam} dia${faltam === 1 ? '' : 's'}`;
+    el('progressLabel').textContent = `Progresso para ${target} dias`;
+    el('progressPct').textContent = `${pct}%`;
+    el('fill').style.width = `${pct}%`;
+  }
+
+  function renderMilestones() {
+    milestones.innerHTML = '';
+    [7, 14, 21, 28, 35, 42, 49, 56].forEach(d => {
+      const info = milestoneInfo(d);
+      const unlocked = state.completed >= d;
+      const card = document.createElement('div');
+      card.className = 'milestone-card ' + (unlocked ? 'unlocked' : 'locked');
+      card.innerHTML = `<div class="week">${d / 7}ª conquista · ${d} dias</div><h3>${info.title}</h3><p>${unlocked ? info.text : 'Continue avançando para desbloquear esta comemoração.'}</p><div class="seal">${unlocked ? '✦ DESBLOQUEADA' : '◌ BLOQUEADA'}</div>`;
+      if (unlocked) {
+        card.style.cursor = 'pointer';
+        card.onclick = () => showMilestone(d, false);
+      }
+      milestones.appendChild(card);
+    });
+  }
+
+  function renderHistory() {
+    const unlocked = [];
+    for (let d = 7; d <= state.completed; d += 7) unlocked.push(d);
+
+    if (!unlocked.length) {
+      history.innerHTML = '<div class="empty">Primeira conquista em 7 dias. Você já começou a sequência.</div>';
+      return;
+    }
+
+    history.innerHTML = '';
+    unlocked.slice().reverse().forEach(d => {
+      const info = milestoneInfo(d);
+      const row = document.createElement('div');
+      row.className = 'history-item';
+      row.innerHTML = `<span>${info.icon}</span><div><b>${d} dias — ${info.title}</b><br><span>Conquista Fragmentos_ desbloqueada.</span></div>`;
+      row.onclick = () => showMilestone(d, false);
+      row.style.cursor = 'pointer';
+      history.appendChild(row);
+    });
+  }
+
+  function render() {
+    renderDays();
+    renderStats();
+    renderMilestones();
+    renderHistory();
+  }
+
+  function unlockMilestone(day) {
+    if (!state.seen.includes(day)) {
+      state.seen.push(day);
+      save();
+    }
+    showMilestone(day, true);
+  }
+
+  function showMilestone(day, withConfetti) {
+    const info = milestoneInfo(day);
+    el('celebration').className = 'celebration ' + info.cls;
+    el('partyIcon').textContent = info.icon;
+    el('modalEyebrow').textContent = `CONQUISTA DESBLOQUEADA · ${day} DIAS`;
+    el('modalTitle').textContent = info.title;
+    el('modalText').textContent = info.text;
+    el('modal').classList.add('show');
+    if (withConfetti) confetti(day);
+  }
+
+  function hideModal() { el('modal').classList.remove('show'); }
+
+  el('closeModal').onclick = hideModal;
+  el('modal').onclick = e => { if (e.target === el('modal')) hideModal(); };
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') hideModal(); });
+
+  function toast(msg) {
+    const t = el('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(window._toast);
+    window._toast = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  function confetti(day) {
+    const amount = Math.min(160, 55 + day * 2);
+    const colors = ['#2ba7ff', '#00e7ff', '#9b4dff', '#d75cff', '#ffd66b', '#2df0a3', '#ffffff'];
+    for (let i = 0; i < amount; i++) {
+      const c = document.createElement('i');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 96 + 'vw'; // 96 (e não 100) para não criar rolagem lateral
+      c.style.top = (-10 - Math.random() * 35) + 'vh';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDelay = Math.random() * 0.7 + 's';
+      c.style.animationDuration = 2.1 + Math.random() * 1.8 + 's';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 4500);
+    }
+  }
+
+  el('showLatest').onclick = () => {
+    const last = Math.floor(state.completed / 7) * 7;
+    if (last >= 7) showMilestone(last, false);
+    else toast('A primeira conquista será desbloqueada aos 7 dias.');
+  };
+
+  el('reset').onclick = () => {
+    if (confirm('Zerar todo o progresso deste painel? Esta ação não pode ser desfeita.')) {
+      state = { completed: 0, seen: [] };
+      save();
+      render();
+      toast('Painel zerado. Novo ciclo iniciado.');
+    }
+  };
+
+  render();
+})();
+</script>
+</body>
+</html>
